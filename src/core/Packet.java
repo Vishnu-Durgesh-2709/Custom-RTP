@@ -8,8 +8,17 @@ public class Packet {
     int ackNo;
     byte flags;
     short windowSize;
+    String message;
 
-    public byte[] serializeBytes(String message){
+    public Packet(int seqNo, int ackNo, byte flags, short windowSize, String message) {
+        this.seqNo = seqNo;
+        this.ackNo = ackNo;
+        this.flags = flags;
+        this.windowSize = windowSize;
+        this.message = message;
+    }
+
+    public byte[] serialize(){
         byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
         int size = message.length();
         int totalSize = Integer.BYTES + Integer.BYTES + Byte.BYTES + Short.BYTES + Integer.BYTES + messageBytes.length;
@@ -26,18 +35,28 @@ public class Packet {
         return buffer.array();
     }
 
-    public String deserializeBytes(byte[] data){
+    public static Packet deserialize(byte[] data){
 
         ByteBuffer buffer = ByteBuffer.wrap(data);
         int seqNo = buffer.getInt();
         int ackNo = buffer.getInt();
-        byte flag = buffer.get();
+        byte flags = buffer.get();
         short windowSize = buffer.getShort();
 
         int size = buffer.getInt();
         byte[] message = new byte[size];
         buffer.get(message);
+        String msg = new String(message, StandardCharsets.UTF_8);
 
-        return new String(message, StandardCharsets.UTF_8);
+        return new Packet(seqNo, ackNo, flags, windowSize, msg);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Packet(seqNo=%d, ackNo=%d, flags=%d, windowSize=%d, message='%s')",
+                seqNo, ackNo, flags, windowSize, message
+        );
+    }
+
 }
