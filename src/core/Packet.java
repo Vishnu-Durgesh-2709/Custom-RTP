@@ -10,12 +10,37 @@ public class Packet {
     short windowSize;
     String message;
 
-    public Packet(int seqNo, int ackNo, byte flags, short windowSize, String message) {
+    // public static final byte FLAG_ACK  = 0x02;
+    public static final byte FLAG_LAST = (byte) 0x80;
+    public static final byte FLAG_FIRST = (byte) 0x01;
+
+    public Packet(int seqNo, String message) {
+        this.seqNo = seqNo;
+        this.message = message;
+    }
+
+    public Packet(int seqNo, int ackNo, byte flags, short windowSize, String message){
         this.seqNo = seqNo;
         this.ackNo = ackNo;
         this.flags = flags;
         this.windowSize = windowSize;
         this.message = message;
+    }
+
+    public int getSeqNo() {
+        return seqNo;
+    }
+
+    public int getAckNo() {
+        return ackNo;
+    }
+
+    public byte getFlags() {
+        return flags;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public byte[] serialize(){
@@ -51,12 +76,12 @@ public class Packet {
         return new Packet(seqNo, ackNo, flags, windowSize, msg);
     }
 
-    @Override
-    public String toString() {
-        return String.format(
-                "Packet(seqNo=%d, ackNo=%d, flags=%d, windowSize=%d, message='%s')",
-                seqNo, ackNo, flags, windowSize, message
-        );
-    }
+//    @Override
+//    public String toString() {
+//        return String.format(
+//                "Packet(seqNo=%d, ackNo=%d, flags=%d, windowSize=%d, message='%s')",
+//                seqNo, ackNo, flags, windowSize, message
+//        );
+//    }
 
 }
